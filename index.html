@@ -1,0 +1,227 @@
+<img src="https://i.postimg.cc/jjDNQPj9/Logo-pour-la-reception-de-Glam-s-Hotel.png" class="logo">
+
+<h1>GLAM'S HOTEL</h1>
+<h2>Réception – Cahier de consignes</h2>
+
+<div class="connexion">
+
+Réceptionniste connecté :
+<strong><span id="userName">Non défini</span></strong>
+
+<br><br>
+
+<select id="loginNom">
+<option value="">Choisir un réceptionniste</option>
+<option value="Aya">Aya</option>
+<option value="Myriam">Myriam</option>
+<option value="Omar">Omar</option>
+<option value="Amine">Amine</option>
+</select>
+
+<button onclick="connecter()">Se connecter</button>
+<button class="secondary" onclick="deconnecter()">Se déconnecter</button>
+
+</div>
+
+<nav>
+
+<a href="#accueil">Accueil</a>
+<a href="#matin">Shift matin</a>
+<a href="#soir">Shift soir</a>
+<a href="#nuit">Shift nuit</a>
+<a href="#chambres">Chambres</a>
+<a href="#historique">Historique</a>
+<a href="#ajout">Ajouter</a>
+
+</nav>
+<div class="dashboard section">
+  <h3>📊 Tableau de bord réception</h3>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <span class="dashboard-number" id="totalConsignes">0</span>
+      <span class="dashboard-label">Consignes totales</span>
+    </div>
+
+    <div class="dashboard-card urgent-card">
+      <span class="dashboard-number" id="totalUrgent">0</span>
+      <span class="dashboard-label">Chambres urgentes</span>
+    </div>
+
+    <div class="dashboard-card attention-card">
+      <span class="dashboard-number" id="totalAttention">0</span>
+      <span class="dashboard-label">Chambres en attention</span>
+    </div>
+
+    <div class="dashboard-card ok-card">
+      <span class="dashboard-number" id="totalOK">27</span>
+      <span class="dashboard-label">Chambres sans signalement</span>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="accueil">
+
+<h3>Bienvenue sur le cahier de consignes</h3>
+
+<p>
+Ce site permet à l'équipe de réception du Glam's Hotel de partager les informations importantes entre les différents shifts.
+</p>
+
+<p>
+Les réceptionnistes peuvent ajouter des consignes, consulter l'historique des chambres et suivre les situations en cours afin d'assurer une continuité de service.
+</p>
+
+</div>
+
+<div class="section">
+
+<h3>🔎 Rechercher une consigne</h3>
+
+<input
+type="text"
+id="recherche"
+placeholder="Rechercher (nom, chambre, message)"
+onkeyup="rechercherConsignes()">
+
+</div>
+
+<div class="section" id="matin">
+
+<h3>🌞 Shift matin – Aya</h3>
+
+<p class="intro-shift">
+Les consignes importantes du shift matin apparaîtront ci-dessous.
+</p>
+
+<ul id="listeMatin" class="liste-consignes"></ul>
+
+</div>
+
+<div class="section" id="soir">
+
+<h3>🌙 Shift soir – Myriam</h3>
+
+<p class="intro-shift">
+Les informations et remarques du shift soir apparaîtront ci-dessous.
+</p>
+
+<ul id="listeSoir" class="liste-consignes"></ul>
+
+</div>
+
+<div class="section" id="nuit">
+
+<h3>🌌 Shift nuit – Omar / Amine</h3>
+
+<p class="intro-shift">
+Les remarques du shift nuit apparaîtront ci-dessous.
+</p>
+
+<ul id="listeNuit" class="liste-consignes"></ul>
+
+</div>
+
+<div class="section" id="chambres">
+
+<h3>🛏️ Suivi des 27 chambres</h3>
+
+<p class="intro-shift">
+Cliquez sur une chambre pour voir son historique.
+</p>
+
+<div id="grilleChambres" class="grille-chambres"></div>
+
+</div>
+
+<div class="section" id="historique">
+
+<h3>📚 Historique des consignes</h3>
+
+<div id="historiqueJours"></div>
+
+</div>
+
+<div class="section">
+
+<h3>📄 Exporter les consignes</h3>
+
+<button onclick="exporterPDF()">
+Exporter en PDF
+</button>
+
+</div>
+
+<div class="section" id="ajout">
+
+<h3>➕ Ajouter une consigne</h3>
+
+<div class="formulaire">
+
+<select id="shift">
+
+<option value="matin">Shift matin</option>
+<option value="soir">Shift soir</option>
+<option value="nuit">Shift nuit</option>
+
+</select>
+
+<input
+type="text"
+id="nom"
+placeholder="Nom du réceptionniste">
+
+<input
+type="text"
+id="chambre"
+placeholder="Numéro de chambre (1 à 27)">
+
+<textarea
+id="message"
+placeholder="Écrire la consigne"></textarea>
+
+<select id="statutChambre">
+
+<option value="ok">Aucun problème</option>
+<option value="attention">Attention</option>
+<option value="urgent">Urgent</option>
+
+</select>
+
+<button onclick="ajouterConsigne()">
+Ajouter la consigne
+</button>
+
+<button
+class="secondary"
+onclick="viderToutesLesConsignes()">
+
+Vider toutes les consignes
+
+</button>
+
+</div>
+
+</div>
+
+<div id="popupChambre" class="popup-overlay">
+
+<div class="popup-box">
+
+<span
+class="popup-close"
+onclick="fermerPopup()">
+
+&times;
+
+</span>
+
+<h3 id="popupTitre">
+Historique chambre
+</h3>
+
+<div id="popupContenu"></div>
+
+</div>
+
+</div>
