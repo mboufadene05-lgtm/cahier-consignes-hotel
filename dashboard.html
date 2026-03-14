@@ -1,382 +1,371 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cahier de consignes - Glam's Hotel</title>
 
-  <style>
-    body{
-      font-family: Arial, sans-serif;
-      background:#f3f6fb;
-      margin:0;
-      padding:30px;
-      color:#16213e;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .container{
-      max-width:1200px;
-      margin:auto;
-      background:white;
-      padding:30px;
-      border-radius:18px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.08);
-    }
+<title>Cahier de consignes - Glam's Hotel</title>
 
-    .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:15px;
-      flex-wrap:wrap;
-      margin-bottom:25px;
-    }
+<style>
 
-    h1{
-      margin:0;
-      font-size:28px;
-    }
+body{
+font-family:Arial;
+background:#f3f6fb;
+padding:40px;
+}
 
-    #user{
-      margin:8px 0 0 0;
-      color:#4b5563;
-      font-weight:bold;
-    }
+.container{
+max-width:1100px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
 
-    .logout-btn{
-      padding:12px 18px;
-      border:none;
-      border-radius:10px;
-      background:#dc2626;
-      color:white;
-      font-weight:bold;
-      cursor:pointer;
-    }
+h1{
+text-align:center;
+}
 
-    .logout-btn:hover{
-      background:#b91c1c;
-    }
+.top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
 
-    .form-card{
-      background:#f8fafc;
-      padding:22px;
-      border-radius:14px;
-      margin-bottom:30px;
-      border:1px solid #e5e7eb;
-    }
+button{
+padding:10px 15px;
+border:none;
+border-radius:8px;
+background:#2563eb;
+color:white;
+cursor:pointer;
+}
 
-    label{
-      display:block;
-      font-weight:bold;
-      margin-bottom:8px;
-      margin-top:12px;
-    }
+textarea{
+width:100%;
+height:120px;
+margin-top:10px;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
 
-    select, textarea{
-      width:100%;
-      box-sizing:border-box;
-      padding:14px;
-      border-radius:10px;
-      border:1px solid #cbd5e1;
-      font-size:16px;
-    }
+select{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
 
-    textarea{
-      min-height:120px;
-      resize:vertical;
-    }
+.note{
+background:#f1f4ff;
+padding:15px;
+border-radius:8px;
+margin-top:10px;
+}
 
-    .add-btn{
-      margin-top:18px;
-      padding:14px 24px;
-      border:none;
-      border-radius:10px;
-      background:#2563eb;
-      color:white;
-      font-size:16px;
-      font-weight:bold;
-      cursor:pointer;
-    }
+.general{
+background:#ecfdf5;
+}
 
-    .add-btn:hover{
-      background:#1d4ed8;
-    }
+.rooms{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:10px;
+margin-top:20px;
+}
 
-    .rooms-header{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:15px;
-      flex-wrap:wrap;
-      margin-bottom:15px;
-    }
+.room{
+background:#eef2ff;
+padding:10px;
+border-radius:6px;
+text-align:center;
+cursor:pointer;
+}
 
-    .filter-btn{
-      padding:10px 14px;
-      border:none;
-      border-radius:10px;
-      background:#e5e7eb;
-      cursor:pointer;
-      font-weight:bold;
-    }
+.delete{
+background:#dc2626;
+margin-top:10px;
+}
 
-    .filter-btn:hover{
-      background:#d1d5db;
-    }
+</style>
 
-    .rooms-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
-      gap:14px;
-      margin-bottom:30px;
-    }
-
-    .room-card{
-      background:#eef2ff;
-      border:1px solid #c7d2fe;
-      border-radius:14px;
-      padding:16px;
-      cursor:pointer;
-      text-align:center;
-      transition:0.2s;
-    }
-
-    .room-card:hover{
-      transform:translateY(-2px);
-      box-shadow:0 6px 16px rgba(0,0,0,0.08);
-    }
-
-    .room-card.active{
-      background:#2563eb;
-      color:white;
-      border-color:#2563eb;
-    }
-
-    .room-title{
-      font-weight:bold;
-      font-size:18px;
-      margin-bottom:8px;
-    }
-
-    .room-count{
-      font-size:14px;
-      opacity:0.9;
-    }
-
-    .notes-title{
-      margin:0 0 15px 0;
-      font-size:24px;
-    }
-
-    .note{
-      background:#f8fafc;
-      border:1px solid #e5e7eb;
-      border-left:5px solid #2563eb;
-      border-radius:14px;
-      padding:16px;
-      margin-top:12px;
-    }
-
-    .note-top{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-bottom:10px;
-      font-size:14px;
-      color:#475569;
-      font-weight:bold;
-    }
-
-    .note-message{
-      font-size:16px;
-      line-height:1.6;
-      margin-bottom:12px;
-      white-space:pre-wrap;
-    }
-
-    .delete-btn{
-      padding:10px 14px;
-      border:none;
-      border-radius:10px;
-      background:#dc2626;
-      color:white;
-      font-weight:bold;
-      cursor:pointer;
-    }
-
-    .delete-btn:hover{
-      background:#b91c1c;
-    }
-
-    .empty{
-      background:#f8fafc;
-      border:1px dashed #cbd5e1;
-      border-radius:14px;
-      padding:20px;
-      color:#64748b;
-      text-align:center;
-    }
-  </style>
 </head>
+
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="topbar">
-      <div>
-        <h1>📒 Cahier de consignes – Réception</h1>
-        <p id="user"></p>
-      </div>
+<div class="top">
 
-      <button class="logout-btn" onclick="logout()">Se déconnecter</button>
-    </div>
+<h1>📒 Cahier de consignes</h1>
 
-    <div class="form-card">
-      <label for="roomSelect">Choisir une chambre</label>
-      <select id="roomSelect"></select>
+<div>
 
-      <label for="message">Consigne</label>
-      <textarea id="message" placeholder="Écrire une consigne pour la chambre choisie..."></textarea>
+<button onclick="window.location.href='settings.html'">⚙️ Paramètres</button>
 
-      <button class="add-btn" onclick="addNote()">Ajouter la consigne</button>
-    </div>
+</div>
 
-    <div class="rooms-header">
-      <h2 style="margin:0;">🛏️ Les 27 chambres</h2>
-      <button class="filter-btn" onclick="showAllRooms()">Voir toutes les consignes</button>
-    </div>
+</div>
 
-    <div class="rooms-grid" id="roomsGrid"></div>
+<p id="user"></p>
 
-    <h2 class="notes-title">📝 Consignes</h2>
-    <div id="notes"></div>
+<h3>Réceptionniste</h3>
 
-  </div>
+<select id="receptionist">
 
-  <script type="module" src="script.js"></script>
+<option>Aya</option>
+<option>Myriam</option>
+<option>Ambre</option>
+<option>Amine</option>
+<option>Omar</option>
 
-  <script>
-    let notes = JSON.parse(localStorage.getItem("consignesHotel")) || [];
-    let selectedRoom = "all";
+</select>
 
-    const roomSelect = document.getElementById("roomSelect");
-    const roomsGrid = document.getElementById("roomsGrid");
-    const notesContainer = document.getElementById("notes");
+<h3>Type de consigne</h3>
 
-    for (let i = 1; i <= 27; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = "Chambre " + i;
-      roomSelect.appendChild(option);
-    }
+<select id="type" onchange="toggleRoom()">
 
-    function saveNotes() {
-      localStorage.setItem("consignesHotel", JSON.stringify(notes));
-    }
+<option value="room">Consigne chambre</option>
+<option value="general">Consigne générale</option>
 
-    function getRoomCount(roomNumber) {
-      return notes.filter(note => note.room === roomNumber).length;
-    }
+</select>
 
-    function renderRooms() {
-      roomsGrid.innerHTML = "";
+<div id="roomSelect">
 
-      for (let i = 1; i <= 27; i++) {
-        const card = document.createElement("div");
-        card.className = "room-card" + (String(i) === String(selectedRoom) ? " active" : "");
+<h3>Chambre</h3>
 
-        card.innerHTML = `
-          <div class="room-title">Chambre ${i}</div>
-          <div class="room-count">${getRoomCount(String(i))} consigne(s)</div>
-        `;
+<select id="room"></select>
 
-        card.onclick = function () {
-          selectedRoom = String(i);
-          roomSelect.value = String(i);
-          renderRooms();
-          renderNotes();
-        };
+</div>
 
-        roomsGrid.appendChild(card);
-      }
-    }
+<h3>Consigne</h3>
 
-    function renderNotes() {
-      notesContainer.innerHTML = "";
+<textarea id="message" placeholder="Écrire une consigne..."></textarea>
 
-      let filteredNotes = notes;
+<br><br>
 
-      if (selectedRoom !== "all") {
-        filteredNotes = notes.filter(note => note.room === selectedRoom);
-      }
+<button onclick="addNote()">Ajouter la consigne</button>
 
-      if (filteredNotes.length === 0) {
-        notesContainer.innerHTML = `<div class="empty">Aucune consigne pour le moment.</div>`;
-        return;
-      }
+<h2>📢 Consignes générales</h2>
 
-      filteredNotes.forEach(note => {
-        const div = document.createElement("div");
-        div.className = "note";
+<div id="generalNotes"></div>
 
-        div.innerHTML = `
-          <div class="note-top">
-            <span>Chambre ${note.room}</span>
-            <span>${note.user}</span>
-            <span>${note.date}</span>
-          </div>
-          <div class="note-message">${note.text}</div>
-          <button class="delete-btn" onclick="deleteNote(${note.id})">Supprimer</button>
-        `;
+<h2>🛏️ Chambres</h2>
 
-        notesContainer.appendChild(div);
-      });
-    }
+<div class="rooms" id="rooms"></div>
 
-    function addNote() {
-      const message = document.getElementById("message").value.trim();
-      const room = roomSelect.value;
-      const userEmail = localStorage.getItem("userEmail") || "Réception";
+<h2>📝 Consignes chambres</h2>
 
-      if (message === "") {
-        alert("Écris une consigne");
-        return;
-      }
+<div id="notes"></div>
 
-      const note = {
-        id: Date.now(),
-        room: room,
-        text: message,
-        user: userEmail,
-        date: new Date().toLocaleString("fr-FR")
-      };
+</div>
 
-      notes.unshift(note);
-      saveNotes();
+<script type="module" src="script.js"></script>
 
-      selectedRoom = room;
-      document.getElementById("message").value = "";
+<script>
 
-      renderRooms();
-      renderNotes();
-    }
+const userEmail = localStorage.getItem("userEmail");
 
-    function deleteNote(id) {
-      notes = notes.filter(note => note.id !== id);
-      saveNotes();
-      renderRooms();
-      renderNotes();
-    }
+if(userEmail){
+document.getElementById("user").innerText="Connecté : "+userEmail;
+}
 
-    function showAllRooms() {
-      selectedRoom = "all";
-      renderRooms();
-      renderNotes();
-    }
+let notes=JSON.parse(localStorage.getItem("consignesHotel"))||[];
 
-    renderRooms();
-    renderNotes();
-  </script>
+let selectedRoom="all";
+
+const roomSelect=document.getElementById("room");
+
+const roomsDiv=document.getElementById("rooms");
+
+const notesDiv=document.getElementById("notes");
+
+const generalDiv=document.getElementById("generalNotes");
+
+for(let i=1;i<=27;i++){
+
+const option=document.createElement("option");
+
+option.value=i;
+
+option.textContent="Chambre "+i;
+
+roomSelect.appendChild(option);
+
+}
+
+function toggleRoom(){
+
+const type=document.getElementById("type").value;
+
+if(type==="general"){
+
+document.getElementById("roomSelect").style.display="none";
+
+}else{
+
+document.getElementById("roomSelect").style.display="block";
+
+}
+
+}
+
+function save(){
+
+localStorage.setItem("consignesHotel",JSON.stringify(notes));
+
+}
+
+function renderRooms(){
+
+roomsDiv.innerHTML="";
+
+for(let i=1;i<=27;i++){
+
+const div=document.createElement("div");
+
+div.className="room";
+
+div.innerText="Ch "+i;
+
+div.onclick=function(){
+
+selectedRoom=i;
+
+renderNotes();
+
+};
+
+roomsDiv.appendChild(div);
+
+}
+
+}
+
+function renderGeneral(){
+
+generalDiv.innerHTML="";
+
+notes.filter(n=>n.type==="general").forEach(note=>{
+
+const div=document.createElement("div");
+
+div.className="note general";
+
+div.innerHTML=`
+<b>${note.user}</b> - ${note.date}<br>
+${note.text}
+<br>
+<button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
+`;
+
+generalDiv.appendChild(div);
+
+});
+
+}
+
+function renderNotes(){
+
+notesDiv.innerHTML="";
+
+let roomNotes=notes.filter(n=>n.type==="room");
+
+if(selectedRoom!=="all"){
+
+roomNotes=roomNotes.filter(n=>n.room==selectedRoom);
+
+}
+
+roomNotes.forEach(note=>{
+
+const div=document.createElement("div");
+
+div.className="note";
+
+div.innerHTML=`
+<b>Chambre ${note.room}</b> - ${note.user} - ${note.date}<br>
+${note.text}
+<br>
+<button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
+`;
+
+notesDiv.appendChild(div);
+
+});
+
+}
+
+function addNote(){
+
+const message=document.getElementById("message").value;
+
+const receptionist=document.getElementById("receptionist").value;
+
+const type=document.getElementById("type").value;
+
+const room=document.getElementById("room").value;
+
+if(message===""){
+
+alert("Écris une consigne");
+
+return;
+
+}
+
+const note={
+
+id:Date.now(),
+
+type:type,
+
+room:type==="room"?room:null,
+
+text:message,
+
+user:receptionist,
+
+date:new Date().toLocaleString("fr-FR")
+
+};
+
+notes.unshift(note);
+
+save();
+
+document.getElementById("message").value="";
+
+renderGeneral();
+
+renderNotes();
+
+}
+
+function deleteNote(id){
+
+notes=notes.filter(n=>n.id!==id);
+
+save();
+
+renderGeneral();
+
+renderNotes();
+
+}
+
+renderRooms();
+
+renderGeneral();
+
+renderNotes();
+
+</script>
+
 </body>
 </html>
