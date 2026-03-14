@@ -3,7 +3,8 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  updatePassword
 } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -18,9 +19,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-window.login = async function () {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+window.login = async function() {
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value.trim();
 
   try {
     await signInWithEmailAndPassword(auth, email, password);
@@ -32,11 +33,35 @@ window.login = async function () {
   }
 };
 
-window.logout = async function () {
+window.logout = async function() {
   try {
     await signOut(auth);
     localStorage.removeItem("userEmail");
+    alert("Déconnexion réussie");
     window.location.href = "index.html";
+  } catch (error) {
+    alert(error.message);
+  }
+};
+
+window.changePassword = async function() {
+  const user = auth.currentUser;
+  const newPassword = document.getElementById("newPassword")?.value.trim();
+
+  if (!newPassword) {
+    alert("Entre un nouveau mot de passe");
+    return;
+  }
+
+  if (!user) {
+    alert("Aucun utilisateur connecté");
+    return;
+  }
+
+  try {
+    await updatePassword(user, newPassword);
+    alert("Mot de passe modifié avec succès");
+    document.getElementById("newPassword").value = "";
   } catch (error) {
     alert(error.message);
   }
@@ -44,6 +69,8 @@ window.logout = async function () {
 
 onAuthStateChanged(auth, (user) => {
   const isLoginPage = !!document.getElementById("email");
+  const isDashboardPage = !!document.getElementById("notes");
+  const isSettingsPage = !!document.getElementById("newPassword");
 
   if (user) {
     localStorage.setItem("userEmail", user.email);
@@ -59,7 +86,7 @@ onAuthStateChanged(auth, (user) => {
   } else {
     localStorage.removeItem("userEmail");
 
-    if (!isLoginPage) {
+    if (isDashboardPage || isSettingsPage) {
       window.location.href = "index.html";
     }
   }
