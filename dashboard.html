@@ -3,9 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Cahier de consignes - Glam's Hotel</title>
+<title>Cahier de consignes</title>
 
 <style>
 
@@ -22,18 +20,29 @@ margin:auto;
 background:#1e293b;
 padding:30px;
 border-radius:12px;
-box-shadow:0 5px 20px rgba(0,0,0,0.5);
 }
 
 h1{
 text-align:center;
 }
 
-.top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
+textarea{
+width:100%;
+height:120px;
+padding:10px;
+border-radius:8px;
+background:#0f172a;
+color:white;
+border:1px solid #ccc;
+}
+
+select{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+background:#0f172a;
+color:white;
 }
 
 button{
@@ -43,27 +52,7 @@ border-radius:8px;
 background:#2563eb;
 color:white;
 cursor:pointer;
-}
-
-textarea{
-width:100%;
-height:120px;
 margin-top:10px;
-padding:10px;
-border-radius:8px;
-border:1px solid #ccc;
-background:#0f172a;
-color:white;
-}
-
-select{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
-border:1px solid #ccc;
-background:#0f172a;
-color:white;
 }
 
 .note{
@@ -73,28 +62,13 @@ border-radius:8px;
 margin-top:10px;
 }
 
-.general{
-background:#14532d;
-}
-
-.rooms{
-display:grid;
-grid-template-columns:repeat(6,1fr);
-gap:10px;
-margin-top:20px;
-}
-
-.room{
-background:#334155;
-padding:10px;
-border-radius:6px;
-text-align:center;
-cursor:pointer;
-}
-
 .delete{
 background:#dc2626;
-margin-top:10px;
+}
+
+.edit{
+background:#f59e0b;
+margin-left:10px;
 }
 
 </style>
@@ -105,72 +79,31 @@ margin-top:10px;
 
 <div class="container">
 
-<div class="top">
-
 <h1>📒 Cahier de consignes</h1>
-
-<div>
-
-<button onclick="window.location.href='settings.html'">⚙️ Paramètres</button>
-
-</div>
-
-</div>
 
 <p id="user"></p>
 
 <h3>Réceptionniste</h3>
 
 <select id="receptionist">
-
 <option>Aya</option>
 <option>Myriam</option>
 <option>Ambre</option>
 <option>Amine</option>
 <option>Omar</option>
-
 </select>
-
-<h3>Type de consigne</h3>
-
-<select id="type" onchange="toggleRoom()">
-
-<option value="room">Consigne chambre</option>
-<option value="general">Consigne générale</option>
-
-</select>
-
-<div id="roomSelect">
-
-<h3>Chambre</h3>
-
-<select id="room"></select>
-
-</div>
 
 <h3>Consigne</h3>
 
-<textarea id="message" placeholder="Écrire une consigne..."></textarea>
+<textarea id="message"></textarea>
 
-<br><br>
+<button onclick="addNote()">Ajouter</button>
 
-<button onclick="addNote()">Ajouter la consigne</button>
-
-<h2>📢 Consignes générales</h2>
-
-<div id="generalNotes"></div>
-
-<h2>🛏️ Chambres</h2>
-
-<div class="rooms" id="rooms"></div>
-
-<h2>📝 Consignes chambres</h2>
+<h2>Consignes</h2>
 
 <div id="notes"></div>
 
 </div>
-
-<script type="module" src="script.js"></script>
 
 <script>
 
@@ -180,124 +113,33 @@ if(userEmail){
 document.getElementById("user").innerText="Connecté : "+userEmail;
 }
 
-let notes=JSON.parse(localStorage.getItem("consignesHotel"))||[];
+let notes = JSON.parse(localStorage.getItem("consignesHotel")) || [];
 
-let selectedRoom="all";
+function save(){
+localStorage.setItem("consignesHotel",JSON.stringify(notes));
+}
 
-const roomSelect=document.getElementById("room");
-
-const roomsDiv=document.getElementById("rooms");
+function render(){
 
 const notesDiv=document.getElementById("notes");
 
-const generalDiv=document.getElementById("generalNotes");
-
-for(let i=1;i<=27;i++){
-
-const option=document.createElement("option");
-
-option.value=i;
-
-option.textContent="Chambre "+i;
-
-roomSelect.appendChild(option);
-
-}
-
-function toggleRoom(){
-
-const type=document.getElementById("type").value;
-
-if(type==="general"){
-
-document.getElementById("roomSelect").style.display="none";
-
-}else{
-
-document.getElementById("roomSelect").style.display="block";
-
-}
-
-}
-
-function save(){
-
-localStorage.setItem("consignesHotel",JSON.stringify(notes));
-
-}
-
-function renderRooms(){
-
-roomsDiv.innerHTML="";
-
-for(let i=1;i<=27;i++){
-
-const div=document.createElement("div");
-
-div.className="room";
-
-div.innerText="Ch "+i;
-
-div.onclick=function(){
-
-selectedRoom=i;
-
-renderNotes();
-
-};
-
-roomsDiv.appendChild(div);
-
-}
-
-}
-
-function renderGeneral(){
-
-generalDiv.innerHTML="";
-
-notes.filter(n=>n.type==="general").forEach(note=>{
-
-const div=document.createElement("div");
-
-div.className="note general";
-
-div.innerHTML=`
-<b>${note.user}</b> - ${note.date}<br>
-${note.text}
-<br>
-<button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
-`;
-
-generalDiv.appendChild(div);
-
-});
-
-}
-
-function renderNotes(){
-
 notesDiv.innerHTML="";
 
-let roomNotes=notes.filter(n=>n.type==="room");
-
-if(selectedRoom!=="all"){
-
-roomNotes=roomNotes.filter(n=>n.room==selectedRoom);
-
-}
-
-roomNotes.forEach(note=>{
+notes.forEach(note=>{
 
 const div=document.createElement("div");
 
 div.className="note";
 
 div.innerHTML=`
-<b>Chambre ${note.room}</b> - ${note.user} - ${note.date}<br>
+<b>${note.user}</b> - ${note.date}<br>
 ${note.text}
+
 <br>
+
 <button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
+
+<button class="edit" onclick="editNote(${note.id})">Modifier</button>
 `;
 
 notesDiv.appendChild(div);
@@ -312,32 +154,16 @@ const message=document.getElementById("message").value;
 
 const receptionist=document.getElementById("receptionist").value;
 
-const type=document.getElementById("type").value;
-
-const room=document.getElementById("room").value;
-
 if(message===""){
-
 alert("Écris une consigne");
-
 return;
-
 }
 
 const note={
-
 id:Date.now(),
-
-type:type,
-
-room:type==="room"?room:null,
-
 text:message,
-
 user:receptionist,
-
 date:new Date().toLocaleString("fr-FR")
-
 };
 
 notes.unshift(note);
@@ -346,9 +172,7 @@ save();
 
 document.getElementById("message").value="";
 
-renderGeneral();
-
-renderNotes();
+render();
 
 }
 
@@ -358,17 +182,29 @@ notes=notes.filter(n=>n.id!==id);
 
 save();
 
-renderGeneral();
-
-renderNotes();
+render();
 
 }
 
-renderRooms();
+function editNote(id){
 
-renderGeneral();
+const note=notes.find(n=>n.id===id);
 
-renderNotes();
+const newText=prompt("Modifier la consigne :",note.text);
+
+if(newText!==null){
+
+note.text=newText;
+
+save();
+
+render();
+
+}
+
+}
+
+render();
 
 </script>
 
