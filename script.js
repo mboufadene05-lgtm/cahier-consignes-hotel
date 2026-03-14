@@ -13,6 +13,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+window.login = async function() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Connexion réussie !");
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
 window.login = async function() {
   const email = document.getElementById("email").value;
