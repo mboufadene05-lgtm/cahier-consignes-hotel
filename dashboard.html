@@ -630,6 +630,35 @@ renderNotes();
 toggleRoom();
 updateDashboard();
 </script>
+<script type="module">
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDaNF_D-DiSxpDqnQVAZJffVJpit3u0AHs",
+  authDomain: "glams-hotel-consignes.firebaseapp.com",
+  projectId: "glams-hotel-consignes",
+  storageBucket: "glams-hotel-consignes.firebasestorage.app",
+  messagingSenderId: "231602556474",
+  appId: "1:231602556474:web:8e91a5d12b6a0fdb8b0c67"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.ajouterConsigneFirebase = async function(user,type,chambre,message){
+
+await addDoc(collection(db,"consignes"),{
+user:user,
+type:type,
+chambre:chambre,
+message:message,
+date:new Date()
+});
+
+}
+
+</script
 </body>
 </html>
