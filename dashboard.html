@@ -1,1 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cahier de consignes - Glam's Hotel</title>
 
+<style>
+body{
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+  color:white;
+  padding:40px;
+  margin:0;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  background:#1e293b;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.5);
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:25px;
+}
+
+h1{
+  margin:0;
+  font-size:28px;
+}
+
+h2{
+  margin-top:30px;
+}
+
+#user{
+  margin:10px 0 25px 0;
+  font-size:16px;
+}
+
+button{
+  padding:10px 15px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  opacity:0.95;
+}
+
+textarea{
+  width:100%;
+  height:120px;
+  margin-top:10px;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #475569;
+  background:#0f172a;
+  color:white;
+  box-sizing:border-box;
+}
+
+select{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #475569;
+  background:#0f172a;
+  color:white;
+  box-sizing:border-box;
+}
+
+.note{
+  background:#334155;
+  padding:15px;
+  border-radius:8px;
+  margin-top:10px;
+  line-height:1.6;
+}
+
+.general{
+  background:#14532d;
+}
+
+.rooms{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin-top:20px;
+}
+
+.room{
+  background:#334155;
+  padding:12px;
+  border-radius:6px;
+  text-align:center;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.room:hover{
+  background:#475569;
+}
+
+.delete{
+  background:#dc2626;
+  margin-top:10px;
+}
+
+.edit{
+  background:#f59e0b;
+  margin-top:10px;
+  margin-left:10px;
+}
+
+.hidden{
+  display:none;
+}
+
+@media(max-width:900px){
+  .rooms{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media(max-width:600px){
+  body{
+    padding:20px;
+  }
+
+  .rooms{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .topbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="topbar">
+    <h1>📒 Cahier de consignes</h1>
+    <button onclick="window.location.href='settings.html'">⚙️ Paramètres</button>
+  </div>
+
+  <p id="user"></p>
+
+  <h3>Réceptionniste</h3>
+  <select id="receptionist">
+    <option>Aya</option>
+    <option>Myriam</option>
+    <option>Ambre</option>
+    <option>Amine</option>
+    <option>Omar</option>
+    <option>Extra</option>
+  </select>
+
+  <h3>Type de consigne</h3>
+  <select id="type" onchange="toggleRoom()">
+    <option value="room">Consigne chambre</option>
+    <option value="general">Consigne générale</option>
+  </select>
+
+  <div id="roomSelectBlock">
+    <h3>Chambre</h3>
+    <select id="room"></select>
+  </div>
+
+  <h3>Consigne</h3>
+  <textarea id="message" placeholder="Écrire une consigne..."></textarea>
+
+  <br><br>
+  <button onclick="addNote()">Ajouter la consigne</button>
+
+  <h2>📢 Consignes générales</h2>
+  <div id="generalNotes"></div>
+
+  <h2>🛏️ Chambres</h2>
+  <div class="rooms" id="rooms"></div>
+
+  <h2>📝 Consignes chambres</h2>
+  <div id="notes"></div>
+
+</div>
+
+<script type="module" src="script.js"></script>
+
+<script>
+const userEmail = localStorage.getItem("userEmail");
+
+if(userEmail){
+  document.getElementById("user").innerText = "Connecté : " + userEmail;
+}
+
+let notes = JSON.parse(localStorage.getItem("consignesHotel")) || [];
+let selectedRoom = "all";
+
+const roomSelect = document.getElementById("room");
+const roomsDiv = document.getElementById("rooms");
+const notesDiv = document.getElementById("notes");
+const generalDiv = document.getElementById("generalNotes");
+
+for(let i=1; i<=27; i++){
+  const option = document.createElement("option");
+  option.value = i;
+  option.textContent = "Chambre " + i;
+  roomSelect.appendChild(option);
+}
+
+function toggleRoom(){
+  const type = document.getElementById("type").value;
+  const block = document.getElementById("roomSelectBlock");
+
+  if(type === "general"){
+    block.classList.add("hidden");
+  } else {
+    block.classList.remove("hidden");
+  }
+}
+
+function save(){
+  localStorage.setItem("consignesHotel", JSON.stringify(notes));
+}
+
+function renderRooms(){
+  roomsDiv.innerHTML = "";
+
+  for(let i=1; i<=27; i++){
+    const div = document.createElement("div");
+    div.className = "room";
+    div.innerText = "Ch " + i;
+
+    div.onclick = function(){
+      selectedRoom = i;
+      renderNotes();
+    };
+
+    roomsDiv.appendChild(div);
+  }
+}
+
+function renderGeneral(){
+  generalDiv.innerHTML = "";
+
+  const generalNotes = notes.filter(n => n.type === "general");
+
+  if(generalNotes.length === 0){
+    generalDiv.innerHTML = "<div class='note general'>Aucune consigne générale.</div>";
+    return;
+  }
+
+  generalNotes.forEach(note => {
+    const div = document.createElement("div");
+    div.className = "note general";
+
+    div.innerHTML = `
+      <b>${note.user}</b> - ${note.date}<br>
+      ${note.text}
+      <br>
+      <button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
+      <button class="edit" onclick="editNote(${note.id})">Modifier</button>
+    `;
+
+    generalDiv.appendChild(div);
+  });
+}
+
+function renderNotes(){
+  notesDiv.innerHTML = "";
+
+  let roomNotes = notes.filter(n => n.type === "room");
+
+  if(selectedRoom !== "all"){
+    roomNotes = roomNotes.filter(n => n.room == selectedRoom);
+  }
+
+  if(roomNotes.length === 0){
+    notesDiv.innerHTML = "<div class='note'>Aucune consigne chambre.</div>";
+    return;
+  }
+
+  roomNotes.forEach(note => {
+    const div = document.createElement("div");
+    div.className = "note";
+
+    div.innerHTML = `
+      <b>Chambre ${note.room}</b> - ${note.user} - ${note.date}<br>
+      ${note.text}
+      <br>
+      <button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
+      <button class="edit" onclick="editNote(${note.id})">Modifier</button>
+    `;
+
+    notesDiv.appendChild(div);
+  });
+}
+
+function addNote(){
+  const message = document.getElementById("message").value.trim();
+  const receptionist = document.getElementById("receptionist").value;
+  const type = document.getElementById("type").value;
+  const room = document.getElementById("room").value;
+
+  if(message === ""){
+    alert("Écris une consigne");
+    return;
+  }
+
+  const note = {
+    id: Date.now(),
+    type: type,
+    room: type === "room" ? room : null,
+    text: message,
+    user: receptionist,
+    date: new Date().toLocaleString("fr-FR")
+  };
+
+  notes.unshift(note);
+  save();
+
+  document.getElementById("message").value = "";
+
+  renderGeneral();
+  renderNotes();
+}
+
+function deleteNote(id){
+  notes = notes.filter(n => n.id !== id);
+  save();
+  renderGeneral();
+  renderNotes();
+}
+
+function editNote(id){
+  const note = notes.find(n => n.id === id);
+
+  if(!note) return;
+
+  const newText = prompt("Modifier la consigne :", note.text);
+
+  if(newText !== null && newText.trim() !== ""){
+    note.text = newText.trim();
+    save();
+    renderGeneral();
+    renderNotes();
+  }
+}
+
+renderRooms();
+renderGeneral();
+renderNotes();
+toggleRoom();
+</script>
+
+</body>
+</html>
