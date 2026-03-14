@@ -84,6 +84,11 @@ color:gray;
 <script>
 
 let notes = JSON.parse(localStorage.getItem("consignes")) || [];
+  const userEmail = localStorage.getItem("userEmail");
+
+if(userEmail){
+document.getElementById("user").innerText = "Connecté : " + userEmail;
+}
 
 const notesContainer = document.getElementById("notes");
 
