@@ -1,1 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
 
+<head>
+
+<meta charset="UTF-8">
+<title>Paramètres - Glam's Hotel</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f3f6fb;
+padding:40px;
+}
+
+.container{
+max-width:600px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+margin-bottom:30px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+margin-top:15px;
+padding:12px 20px;
+border:none;
+border-radius:8px;
+background:#2563eb;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.logout{
+background:#dc2626;
+}
+
+.back{
+background:#6b7280;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>⚙️ Paramètres</h1>
+
+<p id="user"></p>
+
+<h3>Changer le mot de passe</h3>
+
+<input type="password" id="newPassword" placeholder="Nouveau mot de passe">
+
+<button onclick="changePassword()">Changer le mot de passe</button>
+
+<br>
+
+<button class="logout" onclick="logout()">Se déconnecter</button>
+
+<br>
+
+<button class="back" onclick="window.location.href='dashboard.html'">Retour</button>
+
+</div>
+
+<script type="module" src="script.js"></script>
+
+<script>
+
+const userEmail = localStorage.getItem("userEmail");
+
+if(userEmail){
+document.getElementById("user").innerText = "Connecté : " + userEmail;
+}
+
+</script>
+
+</body>
+
+</html>
