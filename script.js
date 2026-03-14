@@ -25,6 +25,7 @@ window.login = async function() {
     await signInWithEmailAndPassword(auth, email, password);
 
     alert("Connexion réussie");
+    localStorage.setItem("userEmail", email);
 
     // redirection vers la page du cahier
     window.location.href = "dashboard.html";
