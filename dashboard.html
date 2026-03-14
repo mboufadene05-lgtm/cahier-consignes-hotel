@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Glam's Hotel - Cahier de consignes</title>
+<title>Cahier de consignes - Glam's Hotel</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -276,37 +274,20 @@ textarea{
 }
 
 @media(max-width:1100px){
-  .content-grid{
-    grid-template-columns:1fr;
-  }
-
-  .dashboard-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .rooms{
-    grid-template-columns:repeat(3,1fr);
-  }
+  .content-grid{grid-template-columns:1fr}
+  .dashboard-grid{grid-template-columns:repeat(2,1fr)}
+  .rooms{grid-template-columns:repeat(3,1fr)}
 }
 
 @media(max-width:800px){
-  .layout{
-    flex-direction:column;
-  }
-
+  .layout{flex-direction:column}
   .sidebar{
     width:100%;
     border-right:none;
     border-bottom:1px solid rgba(255,255,255,0.08);
   }
-
-  .dashboard-grid{
-    grid-template-columns:1fr;
-  }
-
-  .rooms{
-    grid-template-columns:repeat(2,1fr);
-  }
+  .dashboard-grid{grid-template-columns:1fr}
+  .rooms{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -372,7 +353,6 @@ textarea{
     <div class="content-grid">
 
       <div>
-
         <div class="form-card">
           <h2>➕ Ajouter une consigne</h2>
 
@@ -407,11 +387,9 @@ textarea{
           <h2>📢 Consignes générales</h2>
           <div id="generalNotes"></div>
         </div>
-
       </div>
 
       <div>
-
         <div class="rooms-card">
           <h2>🛏️ Les 27 chambres</h2>
           <div class="rooms" id="rooms"></div>
@@ -421,25 +399,47 @@ textarea{
           <h2>📝 Consignes chambres</h2>
           <div id="notes"></div>
         </div>
-
       </div>
 
     </div>
 
   </main>
-
 </div>
 
 <script type="module" src="script.js"></script>
 
-<script>
-const userEmail = localStorage.getItem("userEmail");
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  deleteDoc,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyDaNF_D-DiSxpDqnQVAZJffVJpit3u0AHs",
+  authDomain: "glams-hotel-consignes.firebaseapp.com",
+  projectId: "glams-hotel-consignes",
+  storageBucket: "glams-hotel-consignes.firebasestorage.app",
+  messagingSenderId: "231602556474",
+  appId: "1:231602556474:web:8e91a5d12b6a0fdb8b0c67"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const userEmail = localStorage.getItem("userEmail");
 if(userEmail){
   document.getElementById("user").innerText = userEmail;
 }
 
-let notes = JSON.parse(localStorage.getItem("consignesHotel")) || [];
+let notes = [];
 let selectedRoom = "all";
 
 const roomSelect = document.getElementById("room");
@@ -454,6 +454,14 @@ for(let i=1; i<=27; i++){
   roomSelect.appendChild(option);
 }
 
+function formatDate(value){
+  if(!value) return "";
+  if(typeof value.toDate === "function"){
+    return value.toDate().toLocaleString("fr-FR");
+  }
+  return new Date(value).toLocaleString("fr-FR");
+}
+
 function toggleRoom(){
   const type = document.getElementById("type").value;
   const block = document.getElementById("roomSelectBlock");
@@ -463,10 +471,6 @@ function toggleRoom(){
   } else {
     block.classList.remove("hidden");
   }
-}
-
-function save(){
-  localStorage.setItem("consignesHotel", JSON.stringify(notes));
 }
 
 function updateDashboard(){
@@ -485,11 +489,13 @@ function renderRooms(){
 
   for(let i=1; i<=27; i++){
     const div = document.createElement("div");
-    div.className = "room" + (selectedRoom == i ? " active" : "");
-    div.innerText = "Ch " + i;
+    const count = notes.filter(n => n.type === "room" && String(n.room) === String(i)).length;
+
+    div.className = "room" + (String(selectedRoom) === String(i) ? " active" : "");
+    div.innerHTML = `Ch ${i}<br><small>${count}</small>`;
 
     div.onclick = function(){
-      selectedRoom = i;
+      selectedRoom = String(i);
       renderRooms();
       renderNotes();
       updateDashboard();
@@ -514,11 +520,11 @@ function renderGeneral(){
     div.className = "note general";
 
     div.innerHTML = `
-      <div class="note-top"><b>${note.user}</b> — ${note.date}</div>
-      ${note.text}
+      <div class="note-top"><b>${note.user}</b> — ${formatDate(note.date)}</div>
+      ${note.message}
       <div class="note-actions">
-        <button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
-        <button class="edit" onclick="editNote(${note.id})">Modifier</button>
+        <button class="delete" data-id="${note.id}">Supprimer</button>
+        <button class="edit" data-id="${note.id}">Modifier</button>
       </div>
     `;
 
@@ -532,7 +538,7 @@ function renderNotes(){
   let roomNotes = notes.filter(n => n.type === "room");
 
   if(selectedRoom !== "all"){
-    roomNotes = roomNotes.filter(n => n.room == selectedRoom);
+    roomNotes = roomNotes.filter(n => String(n.room) === String(selectedRoom));
   }
 
   if(roomNotes.length === 0){
@@ -545,11 +551,11 @@ function renderNotes(){
     div.className = "note";
 
     div.innerHTML = `
-      <div class="note-top"><b>Chambre ${note.room}</b> — ${note.user} — ${note.date}</div>
-      ${note.text}
+      <div class="note-top"><b>Chambre ${note.room}</b> — ${note.user} — ${formatDate(note.date)}</div>
+      ${note.message}
       <div class="note-actions">
-        <button class="delete" onclick="deleteNote(${note.id})">Supprimer</button>
-        <button class="edit" onclick="editNote(${note.id})">Modifier</button>
+        <button class="delete" data-id="${note.id}">Supprimer</button>
+        <button class="edit" data-id="${note.id}">Modifier</button>
       </div>
     `;
 
@@ -557,7 +563,7 @@ function renderNotes(){
   });
 }
 
-function addNote(){
+async function addNote(){
   const message = document.getElementById("message").value.trim();
   const receptionist = document.getElementById("receptionist").value;
   const type = document.getElementById("type").value;
@@ -568,52 +574,35 @@ function addNote(){
     return;
   }
 
-  const note = {
-    id: Date.now(),
+  await addDoc(collection(db, "consignes"), {
+    user: receptionist,
     type: type,
     room: type === "room" ? room : null,
-    text: message,
-    user: receptionist,
-    date: new Date().toLocaleString("fr-FR")
-  };
-
-  notes.unshift(note);
-  save();
-
-  if(type === "room"){
-    selectedRoom = room;
-  }
+    message: message,
+    date: new Date().toISOString()
+  });
 
   document.getElementById("message").value = "";
 
-  renderRooms();
-  renderGeneral();
-  renderNotes();
-  updateDashboard();
+  if(type === "room"){
+    selectedRoom = String(room);
+  }
 }
 
-function deleteNote(id){
-  notes = notes.filter(n => n.id !== id);
-  save();
-  renderRooms();
-  renderGeneral();
-  renderNotes();
-  updateDashboard();
+async function deleteNote(id){
+  await deleteDoc(doc(db, "consignes", id));
 }
 
-function editNote(id){
+async function editNote(id){
   const note = notes.find(n => n.id === id);
-
   if(!note) return;
 
-  const newText = prompt("Modifier la consigne :", note.text);
+  const newText = prompt("Modifier la consigne :", note.message);
 
   if(newText !== null && newText.trim() !== ""){
-    note.text = newText.trim();
-    save();
-    renderGeneral();
-    renderNotes();
-    updateDashboard();
+    await updateDoc(doc(db, "consignes", id), {
+      message: newText.trim()
+    });
   }
 }
 
@@ -624,41 +613,36 @@ function showAllRooms(){
   updateDashboard();
 }
 
-renderRooms();
-renderGeneral();
-renderNotes();
-toggleRoom();
-updateDashboard();
-</script>
-<script type="module">
+document.addEventListener("click", async (e) => {
+  if(e.target.classList.contains("delete")){
+    const id = e.target.getAttribute("data-id");
+    await deleteNote(id);
+  }
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDaNF_D-DiSxpDqnQVAZJffVJpit3u0AHs",
-  authDomain: "glams-hotel-consignes.firebaseapp.com",
-  projectId: "glams-hotel-consignes",
-  storageBucket: "glams-hotel-consignes.firebasestorage.app",
-  messagingSenderId: "231602556474",
-  appId: "1:231602556474:web:8e91a5d12b6a0fdb8b0c67"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-window.ajouterConsigneFirebase = async function(user,type,chambre,message){
-
-await addDoc(collection(db,"consignes"),{
-user:user,
-type:type,
-chambre:chambre,
-message:message,
-date:new Date()
+  if(e.target.classList.contains("edit")){
+    const id = e.target.getAttribute("data-id");
+    await editNote(id);
+  }
 });
 
-}
+window.addNote = addNote;
+window.showAllRooms = showAllRooms;
+window.toggleRoom = toggleRoom;
 
-</script
+const q = query(collection(db, "consignes"), orderBy("date", "desc"));
+onSnapshot(q, (snapshot) => {
+  notes = snapshot.docs.map(docItem => ({
+    id: docItem.id,
+    ...docItem.data()
+  }));
+
+  renderRooms();
+  renderGeneral();
+  renderNotes();
+  toggleRoom();
+  updateDashboard();
+});
+</script>
+
 </body>
 </html>
