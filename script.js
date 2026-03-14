@@ -1,6 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } 
-from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDaNF_D-DiSxpDqnQVAZJffVJpit3uOAHs",
@@ -14,42 +18,49 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Fonction de connexion
-window.login = async function() {
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+window.login = async function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   try {
-
     await signInWithEmailAndPassword(auth, email, password);
-
-    alert("Connexion réussie");
     localStorage.setItem("userEmail", email);
-
-    // redirection vers la page du cahier
+    alert("Connexion réussie");
     window.location.href = "dashboard.html";
-
   } catch (error) {
-
     alert(error.message);
-
   }
-
 };
 
+window.logout = async function () {
+  try {
+    await signOut(auth);
+    localStorage.removeItem("userEmail");
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(error.message);
+  }
+};
 
-// Vérifie si utilisateur connecté
 onAuthStateChanged(auth, (user) => {
+  const isLoginPage = !!document.getElementById("email");
 
   if (user) {
+    localStorage.setItem("userEmail", user.email);
 
-    console.log("Utilisateur connecté :", user.email);
+    const userZone = document.getElementById("user");
+    if (userZone) {
+      userZone.innerText = "Connecté : " + user.email;
+    }
 
+    if (isLoginPage) {
+      window.location.href = "dashboard.html";
+    }
   } else {
+    localStorage.removeItem("userEmail");
 
-    window.location.href = "index.html";
-
+    if (!isLoginPage) {
+      window.location.href = "index.html";
+    }
   }
-
 });
