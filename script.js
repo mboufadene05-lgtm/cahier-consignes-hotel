@@ -36,3 +36,19 @@ window.login = async function() {
     alert(error.message);
   }
 };
+import { onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+
+onAuthStateChanged(auth, (user) => {
+
+  if (user) {
+
+    console.log("Utilisateur connecté :", user.email)
+
+  } else {
+
+    window.location.href = "index.html"
+
+  }
+
+});
