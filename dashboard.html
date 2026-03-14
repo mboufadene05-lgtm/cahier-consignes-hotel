@@ -2,10 +2,10 @@
 <html>
 
 <head>
-<meta charset="UTF-8">
-<title>Cahier de consignes - Glam's Hotel</title>
 
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+
+<title>Cahier de consignes</title>
 
 <style>
 
@@ -38,8 +38,8 @@ border:1px solid #ccc;
 }
 
 button{
-margin-top:10px;
-padding:10px 20px;
+margin-top:15px;
+padding:10px 25px;
 border:none;
 border-radius:8px;
 background:#2e6cf6;
@@ -82,6 +82,30 @@ color:gray;
 
 <script>
 
+let notes = JSON.parse(localStorage.getItem("consignes")) || [];
+
+const notesContainer = document.getElementById("notes");
+
+function displayNotes(){
+
+notesContainer.innerHTML="";
+
+notes.forEach(note =>{
+
+const div=document.createElement("div");
+
+div.className="note";
+
+div.innerHTML=
+"<div>"+note.text+"</div>"+
+"<div class='date'>"+note.date+"</div>";
+
+notesContainer.appendChild(div);
+
+});
+
+}
+
 function addNote(){
 
 const message=document.getElementById("message").value;
@@ -91,23 +115,24 @@ alert("Écris une consigne");
 return;
 }
 
-const notes=document.getElementById("notes");
-
-const div=document.createElement("div");
-
 const date=new Date().toLocaleString();
 
-div.className="note";
+const note={
+text:message,
+date:date
+};
 
-div.innerHTML=
-"<div>"+message+"</div>"+
-"<div class='date'>"+date+"</div>";
+notes.unshift(note);
 
-notes.prepend(div);
+localStorage.setItem("consignes",JSON.stringify(notes));
 
 document.getElementById("message").value="";
 
+displayNotes();
+
 }
+
+displayNotes();
 
 </script>
 
